@@ -24,7 +24,7 @@ public record EmailAddress(String value) {
     }
 
     private static boolean hasValidSyntax(String email) {
-        if (email.length() > MAX_LENGTH) {
+        if (email.length() > MAX_LENGTH || containsWhitespace(email)) {
             return false;
         }
         int at = email.indexOf('@');
@@ -41,5 +41,10 @@ public record EmailAddress(String value) {
             }
         }
         return true;
+    }
+
+    /** Covers ASCII whitespace and Unicode spaces such as the no-break space (U+00A0). */
+    private static boolean containsWhitespace(String email) {
+        return email.codePoints().anyMatch(c -> Character.isWhitespace(c) || Character.isSpaceChar(c));
     }
 }

@@ -67,6 +67,33 @@ class TokenHashTest {
     }
 
     @Test
+    void rawTokenAccepts256Characters() {
+        assertThat(new RawToken("a".repeat(256)).value()).hasSize(256);
+    }
+
+    @Test
+    void rawTokenOver256CharactersIsAnUnknownTokenNotAValidationError() {
+        String tooLong = "a".repeat(257);
+        assertThatThrownBy(() -> new RawToken(tooLong))
+                .isInstanceOf(UnknownTokenException.class)
+                .isNotInstanceOf(DomainValidationException.class)
+                .hasMessage("Unknown token");
+    }
+
+    @Test
+    void unknownTokenMessageNeverContainsTheToken() {
+        String tooLong = "s3cr3t".repeat(50);
+        assertThatThrownBy(() -> new RawToken(tooLong)).hasMessageNotContaining("s3cr3t");
+    }
+
+    @Test
+    void blankIsCheckedBeforeLength() {
+        assertThatThrownBy(() -> new RawToken(" ".repeat(300)))
+                .isInstanceOf(DomainValidationException.class)
+                .hasMessage("Token is required");
+    }
+
+    @Test
     void passwordHashToStringHidesTheHash() {
         assertThat(new PasswordHash("$argon2id$v=19$m=19456,t=2,p=1$c2FsdA$aGFzaA").toString())
                 .isEqualTo("PasswordHash[***]");

@@ -29,6 +29,27 @@ class EmailAddressTest {
                 .hasMessage("Email is invalid");
     }
 
+    // Requirements validation table: email "ali veli@mail.com"
+    @Test
+    void rejectsSpaceInsideAddress() {
+        assertThatThrownBy(() -> new EmailAddress("ali veli@mail.com"))
+                .isInstanceOf(DomainValidationException.class)
+                .hasMessage("Email is invalid");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "ali@mail .com",        // space in the domain
+            "ali\tveli@mail.com",   // tab
+            "ali\nveli@mail.com",   // line break
+            "ali veli@mail.com" // no-break space
+    })
+    void rejectsAnyWhitespaceInsideAddress(String input) {
+        assertThatThrownBy(() -> new EmailAddress(input))
+                .isInstanceOf(DomainValidationException.class)
+                .hasMessage("Email is invalid");
+    }
+
     // Requirements validation table: email " Ali@Mail.com " (Q-002)
     @Test
     void trimsAndLowercases() {
