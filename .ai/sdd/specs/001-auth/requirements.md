@@ -1,6 +1,6 @@
 # Feature: Authentication
 
-> Status: Draft
+> Status: approved
 > Source: .ai/sdd/PLAN.md (Phase 1)
 > Last Updated: 2026-11-24
 

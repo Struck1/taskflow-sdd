@@ -15,9 +15,21 @@ com.taskflow.<module>/
 │   ├── port/out/            # Interfaces the module needs (persistence, email...)
 │   └── service/             # Use case implementations
 └── adapter/
-    ├── in/web/              # REST controllers
-    └── out/persistence/     # JPA entities, Spring Data repositories
+    ├── in/<channel>/        # What drives the module
+    │                        #   web/        REST controllers
+    │                        #   scheduling/ @Scheduled jobs
+    └── out/<target>/        # What the module drives
+                             #   persistence/ JPA entities, Spring Data repositories
+                             #   email/       SMTP email sending
 ```
+
+A module creates only the adapter folders it needs.
+
+### Shared IDs
+IDs used by more than one module live in `com.taskflow.shared.domain`
+(e.g. `UserId`, `WorkspaceId`).
+- It contains only ID records, nothing else.
+- It has no Spring, JPA or Jackson imports, like any `domain/` package.
 
 ### Rules
 - `domain/` has no Spring, JPA or Jackson imports.
@@ -59,6 +71,7 @@ com.taskflow.<module>/
 | Situation | Status |
 |-----------|--------|
 | Created | `201` + `Location` header |
+| Accepted for processing, outcome not revealed (e.g. sign-up) | `202` |
 | Read / updated | `200` |
 | Deleted | `204` |
 | Validation error | `400` |
@@ -66,6 +79,7 @@ com.taskflow.<module>/
 | Authenticated but not allowed | `403` |
 | Not found, or belongs to another workspace | `404` |
 | Business rule conflict (e.g. removing the last admin) | `409` |
+| Rate limit or lockout (e.g. too many sign-in attempts) | `429` + `Retry-After` header |
 
 ### Error format
 Errors use RFC 9457 Problem Details (Spring's `ProblemDetail`):
@@ -91,6 +105,8 @@ Errors use RFC 9457 Problem Details (Spring's `ProblemDetail`):
 | `application/service/` | Unit test, `port/out` mocked | JUnit 5, Mockito |
 | `adapter/out/persistence/` | Integration test, real database | `@DataJpaTest` + Testcontainers |
 | `adapter/in/web/` | API test, full request/response | `@SpringBootTest` + Testcontainers |
+| `adapter/in/scheduling/` | Integration test, job method called directly | `@SpringBootTest` + Testcontainers |
+| `adapter/out/email/` | Integration test, real SMTP server | GreenMail |
 
 - Every task ships with its tests; a task without tests is not done.
 - Test names describe behavior: `rejectsBlankTitle()`,

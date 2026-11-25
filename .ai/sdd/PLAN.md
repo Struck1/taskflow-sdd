@@ -5,7 +5,7 @@
 ### Phase 1: Foundation
 | Spec | Module | Scope |
 |------|--------|-------|
-| 001-auth | `auth` | Sign-up, login (email/password + magic link), JWT |
+| 001-auth | `auth` | Sign-up, login (email/password + magic link), server-side sessions |
 | 002-workspaces | `workspace` | Workspaces, members, roles, invites |
 
 ### Phase 2: Core
