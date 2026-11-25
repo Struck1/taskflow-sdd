@@ -89,17 +89,17 @@ The full dependency list is in each task.
 **Estimate:** 2–3 h
 
 **Checklist**
-- [ ] Gradle wrapper, `settings.gradle.kts` (`rootProject.name = "taskflow-pro"`, Foojay toolchain resolver)
-- [ ] `build.gradle.kts`: Java 25 toolchain, Spring Boot 4.x plugin, dependency management
-- [ ] Dependencies: web, security, data-jpa, flyway (with the PostgreSQL module), postgresql driver, mail, actuator/micrometer, BouncyCastle (`bcprov`)
-- [ ] Test dependencies: Spring Boot test, Testcontainers (PostgreSQL, JUnit 5), GreenMail (JUnit 5), Playwright for Java, AssertJ, Mockito
-- [ ] `test` task: `useJUnitPlatform { excludeTags("timing") }`
-- [ ] `timingTest` task: type `Test`, `includeTags("timing")`, not wired into `check` or `build` (design §9)
-- [ ] `TaskflowApplication` in `com.taskflow`
-- [ ] `application.yml`: `spring.jpa.hibernate.ddl-auto=validate`, `open-in-view=false`, Flyway on, Jackson/JDBC time zone UTC
-- [ ] `@TestConfiguration` with a PostgreSQL Testcontainer through `@ServiceConnection`, reused by later tasks
-- [ ] Context-loads test
-- [ ] `.gitignore` for Gradle and build output (`.idea/` stays untouched)
+- [x] Gradle wrapper, `settings.gradle.kts` (`rootProject.name = "taskflow-pro"`, Foojay toolchain resolver)
+- [x] `build.gradle.kts`: Java 25 toolchain, Spring Boot 4.x plugin, dependency management
+- [x] Dependencies: web, security, data-jpa, flyway (with the PostgreSQL module), postgresql driver, mail, actuator/micrometer, BouncyCastle (`bcprov`)
+- [x] Test dependencies: Spring Boot test, Testcontainers (PostgreSQL, JUnit 5), GreenMail (JUnit 5), Playwright for Java, AssertJ, Mockito
+- [x] `test` task: `useJUnitPlatform { excludeTags("timing") }`
+- [x] `timingTest` task: type `Test`, `includeTags("timing")`, not wired into `check` or `build` (design §9)
+- [x] `TaskflowApplication` in `com.taskflow`
+- [x] `application.yml`: `spring.jpa.hibernate.ddl-auto=validate`, `open-in-view=false`, Flyway on, Jackson/JDBC time zone UTC
+- [x] `@TestConfiguration` with a PostgreSQL Testcontainer through `@ServiceConnection`, reused by later tasks
+- [x] Context-loads test
+- [x] `.gitignore` for Gradle and build output (`.idea/` stays untouched)
 
 **Acceptance criteria**
 - `./gradlew clean build` passes on a machine with Docker and runs the context test against real PostgreSQL.
@@ -121,13 +121,13 @@ The full dependency list is in each task.
 **Estimate:** 3 h
 
 **Checklist**
-- [ ] `com.taskflow.shared.domain.UserId` (a record over UUID, rejects `null`). This package holds only ID records.
-- [ ] `EmailAddress`: required → trim → `toLowerCase(Locale.ROOT)` → syntax rules from TD-010
-- [ ] `RawPassword`: blank → at least 8 → at most 128 code points, in that order. Never trimmed. `toString()` returns `RawPassword[***]`.
-- [ ] `RawToken` (redacted `toString()`), `TokenHash` (SHA-256 of a raw token, 32 bytes, `TokenHash.of(RawToken)` in plain Java), `PasswordHash` (opaque string)
-- [ ] `SessionId`, `LinkTokenId` records
-- [ ] `AuthPolicy` constants: 15 min, 60 min, 30 d, 90 d, 1 h touch, 3 links, 5 failures, 7 d, 24 h
-- [ ] Error messages exactly as in the requirements' validation table
+- [x] `com.taskflow.shared.domain.UserId` (a record over UUID, rejects `null`). This package holds only ID records.
+- [x] `EmailAddress`: required → trim → `toLowerCase(Locale.ROOT)` → syntax rules from TD-010
+- [x] `RawPassword`: blank → at least 8 → at most 128 code points, in that order. Never trimmed. `toString()` returns `RawPassword[***]`.
+- [x] `RawToken` (redacted `toString()`), `TokenHash` (SHA-256 of a raw token, 32 bytes, `TokenHash.of(RawToken)` in plain Java), `PasswordHash` (opaque string)
+- [x] `SessionId`, `LinkTokenId` records
+- [x] `AuthPolicy` constants: 15 min, 60 min, 30 d, 90 d, 1 h touch, 3 links, 5 failures, 7 d, 24 h
+- [x] Error messages exactly as in the requirements' validation table
 
 **Acceptance criteria**
 - Every row of the requirements' validation table is a passing unit test.
@@ -151,11 +151,11 @@ The full dependency list is in each task.
 **Estimate:** 2 h
 
 **Checklist**
-- [ ] `LinkPurpose` enum (`VERIFY_EMAIL`, `MAGIC_LINK`)
-- [ ] `LinkToken`: id, purpose, tokenHash, createdAt, expiresAt, usedAt, invalidatedAt
-- [ ] `LinkToken`: `isUsableAt(now)`, `markUsed(now)`, `invalidate(now)`, and a reason when it's unusable (expired / used / invalidated)
-- [ ] `Session`: id, tokenHash, createdAt, lastSeenAt
-- [ ] `Session`: `isActiveAt(now)` (30 d idle and 90 d absolute), `needsTouch(now)` (1 h)
+- [x] `LinkPurpose` enum (`VERIFY_EMAIL`, `MAGIC_LINK`)
+- [x] `LinkToken`: id, purpose, tokenHash, createdAt, expiresAt, usedAt, invalidatedAt
+- [x] `LinkToken`: `isUsableAt(now)`, `markUsed(now)`, `invalidate(now)`, and a reason when it's unusable (expired / used / invalidated)
+- [x] `Session`: id, tokenHash, createdAt, lastSeenAt
+- [x] `Session`: `isActiveAt(now)` (30 d idle and 90 d absolute), `needsTouch(now)` (1 h)
 
 **Acceptance criteria**
 - Boundary tests: a link token expires exactly at `expiresAt`.
