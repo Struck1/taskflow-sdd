@@ -2,7 +2,7 @@
 
 > Status: approved
 > Source: .ai/sdd/PLAN.md (Phase 1)
-> Last Updated: 2026-11-24
+> Last Updated: 2026-11-25
 
 ## Overview
 Users create an account and sign in to TaskFlow Pro. Every other
@@ -197,6 +197,7 @@ Not decided here. This is a design decision (see design.md, TD-xxx).
 |-------|-----------------|
 | email `""` | Error: "Email is required" |
 | email `"ali"` | Error: "Email is invalid" |
+| email `"ali veli@mail.com"` | Error: "Email is invalid" |
 | email `" Ali@Mail.com "` | Accepted, stored as `ali@mail.com` (Q-002) |
 | password `"1234567"` (7 chars) | Error: "Password must be at least 8 characters" |
 | password `"12345678"` (8 chars) | Accepted |

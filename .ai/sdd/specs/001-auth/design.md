@@ -408,16 +408,25 @@ successful sign-in. The domain sees only `PasswordHash`, and hashing goes throug
 **Decision:**
 - **`EmailAddress`:** `null` or blank gives "Email is required". The input is trimmed and
   lowercased with `Locale.ROOT`. A practical syntax check follows: exactly one `@`, a
-  non-empty part before it, a domain with at least one dot and no empty labels, and at
-  most 254 characters. Anything else gives "Email is invalid".
+  non-empty part before it, a domain with at least one dot and no empty labels, no
+  whitespace inside the address, and at most 254 characters. Anything else gives
+  "Email is invalid".
 - **`RawPassword`:** the checks run in this order:
   1. `null`, empty or whitespace-only (`String.isBlank()`) gives "Password must not be blank".
   2. Fewer than 8 Unicode code points gives "Password must be at least 8 characters".
   3. More than 128 code points gives "Password must be 128 characters or fewer".
   The value is never trimmed (Q-006). `toString()` returns `"RawPassword[***]"`, and the
   value is never stored.
-- `RawToken` hides its value in `toString()` the same way.
-**Serves:** FR-001, FR-009, Q-002, Q-006, NFR-001, NFR-003
+- **`RawToken`:** hides its value in `toString()` the same way. The checks run in this order:
+  1. `null`, empty or whitespace-only gives "Token is required" (`400`).
+  2. More than 256 characters throws `UnknownTokenException`. The caller handles it
+     exactly like a token that matches no stored hash. For a link, that's
+     `409 link-invalid` with the same message as an unknown token (FR-006, FR-009). For a
+     session cookie, the unknown-token outcome is `401` (TD-013).
+  The limit counts UTF-16 characters (`String.length()`). Real tokens are 43 characters.
+  The limit only stops oversized input before it's hashed or looked up, so the exact
+  measure doesn't matter.
+**Serves:** FR-001, FR-006, FR-009, Q-002, Q-006, NFR-001, NFR-003
 **Rejected:**
 - *Lowercasing with the default locale.* On a Turkish-locale JVM, `"I"` becomes `"ı"`,
   which would create a different account.
@@ -425,6 +434,8 @@ successful sign-in. The domain sees only `PasswordHash`, and hashing goes throug
 - *A full RFC 5322 regex.* It accepts addresses that mail providers reject.
 - *Validating only with `@Email` on the request DTO.* The rule would then live only in the
   controller (principle 2).
+- *`400` for an oversized token.* It would tell a caller that a token is malformed rather
+  than unknown, when every bad link should look the same.
 
 ### TD-011: The database enforces the core rules
 **Decision:** One Flyway migration, `V1__create_auth_tables.sql`, creates the schema
